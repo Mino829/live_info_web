@@ -7,8 +7,6 @@ const getServerUrl = () => {
   // ローカル開発用
   //if (Platform.OS === 'android') return 'http://10.0.2.2:3000';
   //if (Platform.OS === 'web') return 'http://localhost:3000';
-  //return 'http://192.168.0.14:8001'; // ←あなたのPCのIPアドレス
-  //return 'http://172.31.108.22:8081';//大学の時のIPアドレス
 };
 
 // 共通ヘッダー
