@@ -1,29 +1,30 @@
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
 
-// ★RenderのサーバーURL
-const BASE_URL = 'https://liveinfo-7gxe.onrender.com'; 
+const getServerUrl = () => {
+  // RenderのURLを設定している場合はそのまま（末尾スラッシュなし）
+   return 'https://liveinfo-7gxe.onrender.com';
+  
+  // ローカル開発用
+  //if (Platform.OS === 'android') return 'http://10.0.2.2:3000';
+  //if (Platform.OS === 'web') return 'http://localhost:3000';
+  //return 'http://192.168.0.14:8001'; // ←あなたのPCのIPアドレス
+  //return 'http://172.31.108.22:8081';//大学の時のIPアドレス
+};
 
-const api = axios.create({
-  baseURL: BASE_URL,
+// 共通ヘッダー
+const getHeaders = (token: string) => ({
+  'Content-Type': 'application/json',
+  'x-user-token': token,
 });
 
-const USER_ID_KEY = 'livepulse_fixed_user_id_v2';
 
-// リクエストの前にIDをセット（なければ作って保存）
-api.interceptors.request.use(async (config) => {
-  try {
-    let token = await AsyncStorage.getItem(USER_ID_KEY);
-    if (!token) {
-      token = 'user-' + Date.now().toString(36) + '-' + Math.random().toString(36).substring(2, 9);
-      await AsyncStorage.setItem(USER_ID_KEY, token);
-    }
-    config.headers['x-user-token'] = token;
-  } catch (e) {
-    config.headers['x-user-token'] = 'temp-' + Date.now();
-  }
-  return config;
-});
+// トークン登録
+export const registerToken = async (token: string) => {
+  await fetch(`${getServerUrl()}/register-token`, {
+    method: 'POST',
+    headers: getHeaders(token),
+  });
+};
 
 // --- API関数群 ---
 
